@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { RequestStatus, RequestType } from "@/shared/types/request";
-
-const prisma = new PrismaClient();
+import prisma from "@/shared/lib/prisma";
 
 const createRequestSchema = z.object({
   hotelId: z.string().uuid("Hotel ID must be a valid UUID"),

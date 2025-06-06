@@ -1,8 +1,6 @@
+import prisma from "@/shared/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
-
-const prisma = new PrismaClient();
 
 const createHotelSchema = z.object({
   name: z.string().min(1, "Hotel name is required"),

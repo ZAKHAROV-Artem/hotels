@@ -1,7 +1,5 @@
+import prisma from "@/shared/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 // GET /api/requests/[id] - Get a specific request by ID
 export async function GET(

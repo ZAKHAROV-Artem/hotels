@@ -1,7 +1,6 @@
+import prisma from "@/shared/lib/prisma";
+import { EmployeeRole } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient, EmployeeRole } from "@prisma/client";
-
-const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
   try {
