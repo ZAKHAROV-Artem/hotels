@@ -9,10 +9,10 @@ import {
 } from "@/shared/types/request";
 import { useHotelStore } from "@/shared/stores/hotel-store";
 import { RequestCard } from "./request-card";
-import { RequestsFilter } from "./requests-filter";
-import { RequestsSort } from "./requests-sort";
+import { RequestsControls } from "./requests-controls";
 import { RequestDetailsDialog } from "./request-details-dialog";
 import { AssignEmployeeDialog } from "./assign-employee-dialog";
+import { RequestForm } from "./request-form";
 import { AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
@@ -36,6 +36,7 @@ export function RequestsList({ onViewRequest }: RequestsListProps) {
   const [requestToAssign, setRequestToAssign] = useState<GuestRequest | null>(
     null
   );
+  const [isAddRequestDialogOpen, setIsAddRequestDialogOpen] = useState(false);
   const limit = 10;
 
   const { data, isLoading, error } = useRequests(
@@ -91,14 +92,13 @@ export function RequestsList({ onViewRequest }: RequestsListProps) {
   if (error) {
     return (
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <RequestsFilter
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-            onClearFilters={handleClearFilters}
-          />
-          <RequestsSort sort={sort} onSortChange={handleSortChange} />
-        </div>
+        <RequestsControls
+          filters={filters}
+          sort={sort}
+          onFiltersChange={handleFiltersChange}
+          onSortChange={handleSortChange}
+          onClearFilters={handleClearFilters}
+        />
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-center gap-2 text-red-700">
             <AlertCircle className="w-4 h-4" />
@@ -111,16 +111,14 @@ export function RequestsList({ onViewRequest }: RequestsListProps) {
 
   return (
     <div className="space-y-6">
-      {/* Filters and Sort */}
-      <RequestsFilter
+      {/* Unified Controls */}
+      <RequestsControls
         filters={filters}
+        sort={sort}
         onFiltersChange={handleFiltersChange}
+        onSortChange={handleSortChange}
         onClearFilters={handleClearFilters}
       />
-
-      <div className="flex justify-end">
-        <RequestsSort sort={sort} onSortChange={handleSortChange} />
-      </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -151,11 +149,17 @@ export function RequestsList({ onViewRequest }: RequestsListProps) {
           <div className="text-gray-500">
             <AlertCircle className="w-12 h-12 mx-auto mb-4 text-gray-400" />
             <p className="text-lg font-medium mb-2">No requests found</p>
-            <p className="text-sm">
+            <p className="text-sm mb-4">
               {Object.keys(filters).length > 0
                 ? "Try changing your search criteria"
                 : "No guest requests yet"}
             </p>
+            <Button
+              onClick={() => setIsAddRequestDialogOpen(true)}
+              className="mt-2"
+            >
+              New Request
+            </Button>
           </div>
         </div>
       ) : (
@@ -268,6 +272,16 @@ export function RequestsList({ onViewRequest }: RequestsListProps) {
         request={requestToAssign}
         open={isAssignDialogOpen}
         onClose={handleCloseAssignDialog}
+      />
+
+      {/* Add Request Dialog */}
+      <RequestForm
+        open={isAddRequestDialogOpen}
+        onClose={() => setIsAddRequestDialogOpen(false)}
+        onSuccess={() => {
+          setIsAddRequestDialogOpen(false);
+          // The requests list will automatically refresh due to react-query
+        }}
       />
     </div>
   );

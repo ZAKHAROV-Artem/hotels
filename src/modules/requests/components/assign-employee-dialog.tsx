@@ -45,11 +45,11 @@ export function AssignEmployeeDialog({
 }: AssignEmployeeDialogProps) {
   const { selectedHotel } = useHotelStore();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
-  const [selectedRole, setSelectedRole] = useState<string>("");
+  const [selectedRole, setSelectedRole] = useState<string>("all");
 
   const { data: employees = [], isLoading } = useEmployees({
     hotelId: selectedHotel?.id || "",
-    role: selectedRole || undefined,
+    role: selectedRole === "all" || !selectedRole ? undefined : selectedRole,
     isActive: true,
   });
 
@@ -64,7 +64,7 @@ export function AssignEmployeeDialog({
         onSuccess: () => {
           onClose();
           setSelectedEmployeeId("");
-          setSelectedRole("");
+          setSelectedRole("all");
         },
       }
     );
@@ -73,7 +73,7 @@ export function AssignEmployeeDialog({
   const handleClose = () => {
     onClose();
     setSelectedEmployeeId("");
-    setSelectedRole("");
+    setSelectedRole("all");
   };
 
   const getRecommendedRoles = (requestType: string): EmployeeRole[] => {
@@ -132,7 +132,7 @@ export function AssignEmployeeDialog({
                   <SelectValue placeholder="All roles" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All roles</SelectItem>
+                  <SelectItem value="all">All roles</SelectItem>
                   {Object.entries(roleLabels).map(([value, label]) => (
                     <SelectItem
                       key={value}

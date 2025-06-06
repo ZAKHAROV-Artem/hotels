@@ -4,10 +4,6 @@ import { z } from "zod";
 
 const prisma = new PrismaClient();
 
-const assignRequestSchema = z.object({
-  assignedToId: z.string().uuid("Employee ID must be a valid UUID"),
-});
-
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -15,7 +11,7 @@ export async function PATCH(
   try {
     const { id } = params;
     const body = await request.json();
-    const { assignedToId } = assignRequestSchema.parse(body);
+    const { assignedToId } = body;
 
     // Verify request exists
     const existingRequest = await prisma.request.findUnique({

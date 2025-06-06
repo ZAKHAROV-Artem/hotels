@@ -26,9 +26,11 @@ export const useUpdateRequest = (): UseMutationResult<
       // Invalidate lists to refresh them
       queryClient.invalidateQueries({ queryKey: requestsKeys.lists() });
       queryClient.invalidateQueries({ queryKey: requestsKeys.stats() });
-      queryClient.invalidateQueries({
-        queryKey: requestsKeys.byRoom(updatedRequest.roomNumber),
-      });
+      if (updatedRequest.roomNumber) {
+        queryClient.invalidateQueries({
+          queryKey: requestsKeys.byRoom(updatedRequest.roomNumber),
+        });
+      }
     },
   });
 };

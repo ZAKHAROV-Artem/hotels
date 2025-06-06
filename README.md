@@ -1,168 +1,280 @@
-# Hotel Reception - Sistema de Gestión de Solicitudes de Huéspedes
+# Hotel Reception - Guest Request Management System
 
-Sistema web moderno para personal de recepción hotelera que permite gestionar solicitudes de huéspedes de manera eficiente. Construido con Next.js, TypeScript, Prisma, PostgreSQL y Tailwind CSS.
+Modern web system for hotel reception staff that enables efficient management of guest requests. Built with Next.js 15, TypeScript, Prisma, PostgreSQL, and Tailwind CSS.
 
-## 📋 Описание задачи
+## 📋 System Description
 
-Система решает ключевую проблему ресепшена отелей - быстрое принятие, отслеживание и выполнение запросов гостей. Каждый отель получает изолированную среду с собственными данными (мультиарендность), что позволяет масштабировать решение как SaaS-продукт.
+Complete hotel management system that solves the problem of tracking and assigning guest requests. Includes employee management, task assignment, and real-time tracking. Each hotel operates in an isolated environment with its own data (multi-tenancy), enabling scalability as a SaaS product.
 
-### Основная бизнес-логика
+### Main Features
 
-**Проблема:** Персонал ресепшена теряет срочные запросы гостей, что снижает качество обслуживания и NPS отеля.
+**Request Management:**
 
-**Решение:** Централизованная система с визуальными индикаторами и фильтрацией, которая:
+- ⏱️ Creation and tracking of guest requests
+- 🎯 Automatic/manual assignment to employees
+- 📊 Status and priorities with visual indicators
+- 🔄 Estimated completion time
 
-- ⏱️ Экономит время персонала за счет быстрого доступа к информации
-- 🎯 Снижает риск забытых запросов через цветовую индикацию статусов
-- 📊 Улучшает NPS за счет своевременного выполнения запросов
-- 🔄 Обеспечивает прозрачность процессов для менеджмента
+**Staff Management:**
 
-## 🗄️ Модель данных
+- 👥 Employee registration by department
+- 🏷️ Specific roles (housekeeping, maintenance, front_desk, etc.)
+- 📋 Task assignment and workload tracking
+- ✅ Active/inactive employee status
 
-### Основные сущности (Prisma Schema)
+**Multi-Hotel System:**
+
+- 🏨 Management of multiple independent hotels
+- 🔒 Complete data isolation between properties
+- 📈 Scalability as SaaS
+
+## 🗄️ Updated Data Model
+
+### Complete Prisma Schema
 
 ```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 model Hotel {
-  id        String    @id @default(uuid())
-  name      String
-  address   String?
-  requests  Request[]
+  id          String    @id @default(uuid())
+  name        String
+  address     String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  requests    Request[]
+  employees   Employee[]
+
+  @@map("hotels")
+}
+
+model Employee {
+  id          String       @id @default(uuid())
+  hotelId     String       @map("hotel_id")
+  name        String
+  role        EmployeeRole
+  email       String?
+  phone       String?
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  hotel       Hotel        @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  requests    Request[]
+
+  @@map("employees")
 }
 
 model Request {
-  id          String      @id @default(uuid())
-  hotelId     String      // Мультиарендность
-  guestName   String
-  roomNumber  String?
-  requestType RequestType // cleaning, slippers, late_checkout, towels, etc.
-  status      Status      // pending, in_progress, done
-  priority    Priority    // low, medium, high
-  createdAt   DateTime
-  hotel       Hotel       @relation(fields: [hotelId], references: [id])
+  id                  String      @id @default(uuid())
+  hotelId             String      @map("hotel_id")
+  guestName           String      @map("guest_name")
+  roomNumber          String?     @map("room_number")
+  requestType         RequestType @map("request_type")
+  description         String?
+  status              Status      @default(pending)
+  priority            Priority?   @default(medium)
+  assignedToId        String?     @map("assigned_to_id")
+  estimatedCompletion DateTime?   @map("estimated_completion")
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  hotel       Hotel       @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  assignedTo  Employee?   @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@map("requests")
+}
+
+enum RequestType {
+  cleaning        // Cleaning
+  slippers        // Slippers
+  late_checkout   // Late checkout
+  towels          // Towels
+  room_service    // Room service
+  maintenance     // Maintenance
+  other           // Other
+}
+
+enum Status {
+  pending      // Pending
+  in_progress  // In progress
+  done         // Completed
+}
+
+enum Priority {
+  low     // Low
+  medium  // Medium
+  high    // High
+}
+
+enum EmployeeRole {
+  housekeeping  // Housekeeping
+  maintenance   // Maintenance
+  front_desk    // Front desk
+  room_service  // Room service
+  concierge     // Concierge
+  manager       // Management
 }
 ```
 
-### API эндпоинты
+### New Schema Features
 
-- `GET /api/requests?hotel_id=<>&status=<>&sort=date` - Список запросов с фильтрацией
-- `PATCH /api/requests/:id/status` - Изменение статуса запроса
-- `POST /api/requests` - Создание нового запроса
+**Employee Management:**
 
-## 🚀 Запуск и деплой
+- Complete employee management per hotel
+- Specific roles for automatic task assignment
+- Active/inactive status for availability control
+- Contact information for communication
 
-### Локальная разработка
+**Enhanced Requests:**
+
+- Assignment of requests to specific employees
+- Estimated completion time
+- Detailed descriptions for better context
+- Cascading deletes for referential integrity
+
+**Improved Data Mapping:**
+
+- Snake_case mapping for better DB consistency
+- Proper indexing and relationships
+- Soft deletes ready (isActive flag)
+
+## 🚀 Technologies and Architecture
+
+### Updated Technology Stack
+
+- **Frontend:** Next.js 15 (App Router), TypeScript, React 19
+- **State:** Zustand + TanStack Query v5
+- **UI:** Tailwind CSS v4, Radix UI, Lucide Icons
+- **Backend:** Next.js API Routes with Zod validation
+- **Database:** PostgreSQL with Prisma ORM v6.9
+- **Deploy:** Vercel optimized
+- **Real-time:** React Query with auto-refresh
+
+### Project Structure
+
+```
+src/
+├── app/                    # Next.js 15 App Router
+│   ├── api/               # API Routes
+│   ├── page.tsx           # Homepage
+│   ├── layout.tsx         # Root layout
+│   └── globals.css        # Global styles
+├── modules/               # Feature modules
+│   ├── requests/          # Request management
+│   ├── employees/         # Employee management
+│   └── hotels/            # Hotel management
+└── shared/                # Shared components and utilities
+```
+
+### Updated API Endpoints
+
+**Requests API:**
+
+- `GET /api/requests?hotel_id=<>&status=<>&assigned_to=<>&sort=date`
+- `POST /api/requests` - Create request (with auto-assignment)
+- `PATCH /api/requests/:id/status` - Update status
+- `PATCH /api/requests/:id/assign` - Assign employee
+- `GET /api/requests/:id` - Request details
+
+**Employees API:**
+
+- `GET /api/employees?hotel_id=<>&role=<>&active=true`
+- `POST /api/employees` - Register employee
+- `PATCH /api/employees/:id` - Update employee
+- `DELETE /api/employees/:id` - Deactivate employee
+
+**Hotels API:**
+
+- `GET /api/hotels` - List hotels
+- `POST /api/hotels` - Create hotel
+- `GET /api/hotels/:id/stats` - Hotel statistics
+
+## 🚀 Installation and Setup
+
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL 14+
+- npm or yarn
+
+### Local Installation
 
 ```bash
-# 1. Клонирование репозитория
+# 1. Clone repository
 git clone <repository-url>
 cd hotels
 
-# 2. Установка зависимостей
+# 2. Install dependencies
 npm install
 
-# 3. Настройка базы данных
-# Создайте .env файл с DATABASE_URL
-echo "DATABASE_URL=postgresql://username:password@localhost:5432/hotels" > .env
+# 3. Configure environment variables
+cp .env.example .env
+# Edit .env with your DATABASE_URL
 
-# 4. Применение миграций Prisma
+# 4. Setup database
 npx prisma generate
 npx prisma db push
 
-# 5. Запуск сервера разработки
+# 5. Start development server
 npm run dev
 ```
 
-### Деплой на Vercel
+### Environment Variables
 
 ```bash
-# 1. Подключение к Vercel
-vercel login
-vercel link
-
-# 2. Настройка переменных окружения в Vercel Dashboard
-# DATABASE_URL - строка подключения к PostgreSQL
-
-# 3. Деплой
-vercel --prod
+# .env
+DATABASE_URL="postgresql://user:password@localhost:5432/hotels_db"
 ```
 
-### Docker (бонус)
+## 💡 UX Improvements and Features
 
-```bash
-# Сборка и запуск в контейнере
-docker-compose up -d
-```
+### Intelligent Assignment System
 
-## 💡 UX-решения
+**Auto-assignment by Role:**
 
-### Почему фильтрация критически важна
+- `cleaning` → `housekeeping` staff
+- `maintenance` → `maintenance` staff
+- `room_service` → `room_service` staff
+- Automatic load balancer between active employees
 
-**Проблема:** В отеле 100+ номеров, ресепшен получает 50+ запросов в день. Без фильтрации персонал тратит 3-5 минут на поиск нужного запроса.
+### Enhanced Dashboard
 
-**Решение:**
+**Advanced Filters:**
 
-- 🔍 Фильтр по статусу (`Pending/In Progress/Done`) - мгновенный доступ к активным задачам
-- 📅 Сортировка по дате - старые запросы всегда видны первыми
-- 🏷️ Фильтр по типу запроса - специализация персонала
+- 👤 By assigned employee
+- 🏷️ By request type
+- ⏰ By estimated time
+- 📊 By hotel (if multi-hotel)
 
-### Цветовая индикация
+**Visual Indicators:**
 
-**Психология восприятия:**
+- 🔴 **Pending + High Priority** - Immediate attention
+- 🟡 **In Progress** - In process
+- 🟢 **Done** - Completed
+- ⚪ **Unassigned** - Unassigned
 
-- 🔴 **Красный (Pending)** - требует немедленного внимания
-- 🟡 **Желтый (In Progress)** - процесс выполнения
-- 🟢 **Зеленый (Done)** - успешное завершение
+### Scalability
 
-**Результат:** Снижение времени принятия решения с 10-15 секунд до 2-3 секунд.
+**Current Architecture:**
 
-### URL-персистентность
+- ✅ One database, multiple tenants
+- ✅ Isolation by `hotel_id`
+- ✅ Automatically filtered APIs
 
-Состояние фильтров сохраняется в URL, что позволяет:
+**Ready for:**
 
-- Делиться ссылками на отфильтрованные представления
-- Сохранять контекст при обновлении страницы
-- Создавать закладки для частых запросов
-
-## 🏢 Мультиарендность (Multi-tenancy)
-
-### Архитектурный подход
-
-Система использует **Row-Level Security (RLS)** подход:
-
-- Каждый запрос привязан к `hotel_id`
-- API автоматически фильтрует данные по отелю
-- Полная изоляция данных между арендаторами
-
-### Масштабируемость
-
-**Текущая реализация:**
-
-- Один экземпляр приложения обслуживает множество отелей
-- База данных: общая схема с разделением по `hotel_id`
-
-**Будущее расширение:**
-
-- Возможность перехода на отдельные базы для крупных клиентов
-- Горизонтальное масштабирование через шардинг по регионам
-- Интеграция с существующими PMS системами отелей
-
-### Безопасность
-
-- Middleware проверяет принадлежность запросов к отелю
-- Невозможно получить данные чужого отеля через API
-- Готовность к добавлению ролевой модели (admin/staff/viewer)
-
-## 🔧 Технический стек
-
-- **Frontend:** Next.js 15, TypeScript, TanStack Query, Tailwind CSS
-- **Backend:** Next.js API Routes, Prisma ORM
-- **Database:** PostgreSQL
-- **Deploy:** Vercel, Docker
-- **Real-time:** SWR для автообновления данных
-
-## 📈 Метрики успеха
-
-- **Время обработки запроса:** снижение с 15 минут до 5 минут
-- **Забытые запросы:** снижение с 15% до <2%
-- **Удовлетворенность гостей:** рост NPS на 12-15 пунктов
-- **Эффективность персонала:** +30% запросов в час
+- 🔄 Sharding by geographic region
+- 📊 Centralized cross-hotel analytics
+- 🔐 Granular roles and permissions system
+- 🌐 Integration with existing PMS systems
