@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 
     // Build order by clause
     const getOrderBy = (sortBy: string, sortOrder: string) => {
-      const order = sortOrder === "asc" ? "asc" : "desc";
+      const order = sortOrder === "asc" ? ("asc" as const) : ("desc" as const);
 
       switch (sortBy) {
         case "priority":

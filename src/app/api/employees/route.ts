@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, EmployeeRole } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -20,14 +20,14 @@ export async function GET(request: NextRequest) {
 
     const where: {
       hotelId: string;
-      role?: string;
+      role?: EmployeeRole;
       isActive?: boolean;
     } = {
       hotelId: hotelId,
     };
 
     if (role) {
-      where.role = role;
+      where.role = role as EmployeeRole;
     }
 
     if (isActive !== null) {
