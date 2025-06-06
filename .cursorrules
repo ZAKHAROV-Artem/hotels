@@ -1,0 +1,58 @@
+# Cursor Rules for Hotels Project
+
+## File and Folder Naming Convention
+
+### ENFORCE KEBAB-CASE NAMING
+
+- All component files MUST use kebab-case naming (e.g., `request-table.tsx`, `status-badge.tsx`)
+- All folder names MUST use kebab-case (e.g., `user-profile`, `data-table`)
+- TypeScript/React component files should end with `.tsx`
+- Utility/hook files should end with `.ts`
+
+### Examples of CORRECT naming:
+
+- `request-table.tsx`
+- `status-badge.tsx`
+- `user-profile-card.tsx`
+- `data-validation-utils.ts`
+- `use-hotel-data.ts`
+
+### Examples of INCORRECT naming:
+
+- `RequestTable.tsx` (PascalCase)
+- `requestTable.tsx` (camelCase)
+- `request_table.tsx` (snake_case)
+- `REQUESTTABLE.tsx` (UPPERCASE)
+
+### Exceptions:
+
+- Ignore `node_modules/` directory
+- Ignore `.next/` directory
+- Ignore Next.js convention files like `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`
+- Ignore `globals.css` and other config files
+
+### Component Implementation:
+
+- Component names inside files should still use PascalCase (e.g., `RequestTable`)
+- Export the component as default: `export default RequestTable`
+- File name should be kebab-case but component name should be PascalCase
+
+### Folder Structure:
+
+- Use kebab-case for all custom folders
+- Group related components in kebab-case folders (e.g., `auth-components/`, `hotel-management/`)
+
+## Code Quality Rules
+
+### Import Organization:
+
+- Group imports: React imports first, then third-party libraries, then local imports
+- Use absolute imports when possible with the `@/` alias
+
+### Component Structure:
+
+- Use function components with TypeScript
+- Define prop types with interfaces
+- Use meaningful, descriptive names for variables and functions
+
+IMPORTANT: When creating new files or folders, always double-check that the naming follows kebab-case convention!
