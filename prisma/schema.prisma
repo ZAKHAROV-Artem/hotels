@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")     
+}
+
+model Hotel {
+  id          String    @id @default(uuid())
+  name        String
+  address     String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  
+  // Relations
+  requests    Request[]
+  employees   Employee[]
+
+  @@map("hotels")
+}
+
+model Employee {
+  id          String       @id @default(uuid())
+  hotelId     String       @map("hotel_id")
+  name        String
+  role        EmployeeRole
+  email       String?
+  phone       String?
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  
+  // Relations
+  hotel       Hotel        @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  requests    Request[]
+
+  @@map("employees")
+}
+
+model Request {
+  id          String      @id @default(uuid())
+  hotelId     String      @map("hotel_id")
+  guestName   String      @map("guest_name")
+  roomNumber  String?     @map("room_number")
+  requestType RequestType @map("request_type")
+  description String?
+  status      Status      @default(pending)
+  priority    Priority?   @default(medium)
+  assignedToId String?    @map("assigned_to_id")
+  estimatedCompletion DateTime? @map("estimated_completion")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  
+  // Relations
+  hotel       Hotel       @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  assignedTo  Employee?   @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  @@map("requests")
+}
+
+enum RequestType {
+  cleaning
+  slippers
+  late_checkout
+  towels
+  room_service
+  maintenance
+  other
+}
+
+enum Status {
+  pending
+  in_progress
+  done
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+enum EmployeeRole {
+  housekeeping
+  maintenance
+  front_desk
+  room_service
+  concierge
+  manager
+} 
