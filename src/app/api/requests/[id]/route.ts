@@ -1,4 +1,4 @@
-import prisma from "@/shared/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/requests/[id] - Get a specific request by ID

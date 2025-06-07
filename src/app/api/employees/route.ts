@@ -1,4 +1,4 @@
-import prisma from "@/shared/lib/prisma";
+import { prisma } from "@/shared/lib/prisma";
 import { EmployeeRole } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
