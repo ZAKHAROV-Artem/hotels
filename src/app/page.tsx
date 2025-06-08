@@ -30,18 +30,37 @@ export default function Home() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <Hotel className="w-8 h-8 text-blue-600" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Hotel className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  {selectedHotel
-                    ? selectedHotel.name
-                    : "Guest Request Management System"}
+                <h1 className="text-sm sm:text-lg lg:text-xl font-bold text-gray-900">
+                  {selectedHotel ? (
+                    selectedHotel.name
+                  ) : (
+                    <>
+                      <span className="sm:hidden">Request Manager</span>
+                      <span className="hidden sm:inline">
+                        Guest Request Management System
+                      </span>
+                    </>
+                  )}
                 </h1>
-                <p className="text-sm text-gray-600">
-                  {selectedHotel
-                    ? "Hotel Management Dashboard"
-                    : "SaaS Mode - Multi-Hotel Management"}
+                <p className="text-xs sm:text-sm text-gray-600">
+                  {selectedHotel ? (
+                    <>
+                      <span className="sm:hidden">Dashboard</span>
+                      <span className="hidden sm:inline">
+                        Hotel Management Dashboard
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="sm:hidden">Multi-Hotel SaaS</span>
+                      <span className="hidden sm:inline">
+                        SaaS Mode - Multi-Hotel Management
+                      </span>
+                    </>
+                  )}
                 </p>
               </div>
             </div>
@@ -54,9 +73,11 @@ export default function Home() {
                   ? "Please select a hotel first"
                   : "Create new request"
               }
+              className="text-xs sm:text-sm"
             >
-              <Plus className="w-4 h-4" />
-              New Request
+              <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">New Request</span>
+              <span className="sm:hidden">New</span>
             </Button>
           </div>
         </div>

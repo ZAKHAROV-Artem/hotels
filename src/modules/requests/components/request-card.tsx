@@ -109,7 +109,7 @@ export function RequestCard({
   return (
     <Card
       className={cn(
-        "hover:shadow-md transition-all h-full flex flex-col border-l-4",
+        "hover:shadow-md transition-all p-2 h-full gap-2 flex flex-col border-l-4",
         urgent && !overdue && "border-l-orange-400 bg-orange-50/30",
         overdue && "border-l-red-500 bg-red-50/30",
         request.status === RequestStatus.DONE &&
@@ -120,10 +120,10 @@ export function RequestCard({
           "border-l-blue-200"
       )}
     >
-      <CardContent className="flex-grow p-3 sm:p-4">
+      <CardContent className="flex-grow p-2 sm:p-4">
         {/* Header with Room Number and Status - Mobile Responsive */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-3 sm:gap-0">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-3 gap-2 sm:gap-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
             {/* Prominent Room Number */}
             <div className="bg-slate-100 rounded-lg px-3 py-1.5 border w-fit">
               <div className="text-xs text-gray-500 font-medium">ROOM</div>
@@ -159,7 +159,7 @@ export function RequestCard({
         </div>
 
         {/* Time and Assignment Info - Mobile Responsive */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2 sm:gap-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 sm:mb-3 gap-1 sm:gap-0">
           <div className="flex items-center gap-2 text-sm">
             <Clock className="w-4 h-4 text-gray-500 flex-shrink-0" />
             <span
@@ -189,15 +189,15 @@ export function RequestCard({
 
         {/* Description - Mobile Responsive */}
         {request.description && (
-          <div className="mb-4">
-            <p className="text-sm text-gray-700 line-clamp-3 sm:line-clamp-2 leading-relaxed bg-gray-50 p-3 sm:p-2 rounded border-l-2 border-gray-200">
+          <div className="mb-2 sm:mb-4">
+            <p className="text-sm text-gray-700 line-clamp-3 sm:line-clamp-2 leading-relaxed bg-gray-50 p-2 sm:p-2 rounded border-l-2 border-gray-200">
               {request.description}
             </p>
           </div>
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center p-3 pt-0 mt-auto border-t bg-gray-50/50 gap-3 sm:gap-0">
+      <CardFooter className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center p-2 sm:p-3 pt-0 mt-auto border-t bg-gray-50/50 gap-2 sm:gap-0">
         {/* Quick Actions - Mobile Responsive */}
         <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
           <Button
